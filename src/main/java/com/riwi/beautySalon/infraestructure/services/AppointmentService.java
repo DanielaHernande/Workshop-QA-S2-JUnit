@@ -146,14 +146,30 @@ public class AppointmentService implements IAppointmentService {
 
     private AppointmentResp entityToResponse(Appointment entity) {
 
-        ServiceResp service = new ServiceResp();
-        BeanUtils.copyProperties(entity.getService(), service);
+        ServiceResp service = null;
 
-        EmployeeResp employee = new EmployeeResp();
-        BeanUtils.copyProperties(entity.getEmployee(), employee);
+        if (entity.getService() != null) {
+            
+            service = new ServiceResp();
+            BeanUtils.copyProperties(entity.getService(), service);
+        };
 
-        ClientBasicResp client = new ClientBasicResp();
-        BeanUtils.copyProperties(entity.getClient(), client);
+        //
+        EmployeeResp employee = null;
+
+        if (entity.getEmployee() != null) {
+            
+            employee = new EmployeeResp();
+            BeanUtils.copyProperties(entity.getEmployee(), employee);
+        };
+
+        // 
+        ClientBasicResp client = null;
+        if (entity.getClient() != null) {
+            
+            client = new ClientBasicResp();
+            BeanUtils.copyProperties(entity.getClient(), client);
+        }
 
         return AppointmentResp.builder()
                 .id(entity.getId())
