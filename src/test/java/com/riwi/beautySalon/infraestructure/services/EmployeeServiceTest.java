@@ -64,6 +64,40 @@ public class EmployeeServiceTest {
         assertEquals(emplPage.getContent().get(0).getPhone(), result.getContent().get(0).getPhone());
     };
 
+
+    // Get
+    @Test
+    public void testGet() {
+
+        // Given
+        Long employeeId = 1L;
+
+        Employee employee = new Employee();
+        employee.setId(1L);
+        employee.setFirstName("Pepe");
+        employee.setLastName("Perez");
+        employee.setEmail("pepe@gmail.com");
+        employee.setAppointments(DataProviderClient.appointmentsEntity());
+        employee.setPhone("1234858754");
+        employee.setRole(null);
+        employee.setUser(null);
+
+        when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+
+        // When
+        EmployeeResp employeeResp = employeeService.get(employeeId);
+
+        // Them
+        assertNotNull(employeeResp);
+        assertEquals(employee.getId(), employeeResp.getId());
+        assertEquals(employee.getEmail(), employeeResp.getEmail());
+        assertEquals(employee.getFirstName(), employeeResp.getFirstName());
+        assertEquals(employee.getLastName(), employeeResp.getLastName());
+        assertEquals(employee.getPhone(), employeeResp.getPhone());
+
+        System.out.println("Metodo Get del Employee");
+    };
+
     // Crear
     @Test
     public void testCreate() {
