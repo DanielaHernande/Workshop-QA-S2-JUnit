@@ -1,9 +1,12 @@
 package com.riwi.beautySalon.infraestructure.services;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,27 +18,41 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.riwi.beautySalon.api.dto.request.AppointmentReq;
 import com.riwi.beautySalon.api.dto.response.AppointmentResp;
 import com.riwi.beautySalon.domain.entities.Appointment;
+import com.riwi.beautySalon.domain.entities.ClientEntity;
+import com.riwi.beautySalon.domain.entities.Employee;
+import com.riwi.beautySalon.domain.entities.ServiceEntity;
 import com.riwi.beautySalon.domain.repositories.AppointmentRepository;
 import com.riwi.beautySalon.utils.DataProviderAppointment;
-//import com.riwi.beautySalon.domain.repositories.ClientRepository;
-//import com.riwi.beautySalon.domain.repositories.EmployeeRepository;
-//import com.riwi.beautySalon.domain.repositories.ServiceRepository;
+import com.riwi.beautySalon.domain.repositories.ClientRepository;
+import com.riwi.beautySalon.domain.repositories.EmployeeRepository;
+import com.riwi.beautySalon.domain.repositories.ServiceRepository;
+import com.riwi.beautySalon.infraestructure.helpers.EmailHelper;
 import com.riwi.beautySalon.utils.enums.SortType;
-
 @ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
 
     @Mock
     private AppointmentRepository appointmentRepository; 
-    //private EmployeeRepository employeeRepository;
-    //private ClientRepository clientRepository;
-    //private ServiceRepository serviceRepository;
+
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private ClientRepository clientRepository;
+
+    @Mock
+    private ServiceRepository serviceRepository;
+
+    @Mock
+    private EmailHelper emailHelper;
 
     @InjectMocks
     private  AppointmentService appointmentService;
     
+    // FindAll
     @Test
     public void testGetAll() {
 
@@ -56,5 +73,57 @@ public class AppointmentServiceTest {
 
         // Then
         assertEquals(appointments.size(), result.getTotalElements());
-    }
+        // Validamos que no sea nulo
+        assertNotNull(result);
+        //verify(this.appointmentRepository).findAll();
+    };
+
+    // Create
+    @Test
+    public void testCreate() {
+
+        // Given
+        Long clientId = 1L;
+        Long employeeId = 2L;
+        Long serviceId = 1L;
+
+        AppointmentReq request = new AppointmentReq();
+        request.setClientId(clientId);
+        request.setEmployeeId(employeeId);
+        request.setServiceId(serviceId);
+        request.setDateTime(LocalDateTime.now());
+
+        // Objetos para simular una entodad
+        ClientEntity clien = DataProviderAppointment.clientById(clientId);
+        Employee employee = DataProviderAppointment.employeeById(employeeId);
+        ServiceEntity serviceEntity = DataProviderAppointment.serviceEntityById(serviceId);
+
+        Appointment appointmentSave = new Appointment();
+        appointmentSave.setId(1L);
+        appointmentSave.setComments("Muy bien");
+        appointmentSave.setClient(clien);
+        appointmentSave.setEmployee(employee);
+        appointmentSave.setService(serviceEntity);
+        appointmentSave.setDateTime(request.getDateTime());
+        appointmentSave.setDuration(request.getDuration());
+
+        // When
+        when(this.clientRepository.findById(clientId)).thenReturn(Optional.of(clien));
+        when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        when(this.serviceRepository.findById(serviceId)).thenReturn(Optional.of(serviceEntity));
+        when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(appointmentSave);
+
+        doNothing().when(emailHelper).sendEmail(anyString(), anyString(), anyString(), any(LocalDateTime.class));
+
+        AppointmentResp response = appointmentService.create(request);
+
+        // Then
+        // Verifica que no sea nulo
+        assertNotNull(response);
+        // Verifica que tenga los datos correctos
+        //assertEquals(clientId, response.getClient().getId());
+        verify(clientRepository).findById(clientId);
+        verify(employeeRepository).findById(employeeId);
+        verify(serviceRepository).findById(serviceId);
+    };
 }
