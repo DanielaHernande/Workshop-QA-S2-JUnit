@@ -3,10 +3,12 @@ package com.riwi.beautySalon.infraestructure.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,7 @@ import com.riwi.beautySalon.domain.entities.Appointment;
 import com.riwi.beautySalon.domain.entities.ServiceEntity;
 import com.riwi.beautySalon.domain.repositories.ServiceRepository;
 import com.riwi.beautySalon.utils.DataProviderClient;
+
 
 @ExtendWith(MockitoExtension.class)
 public class ServiceServiceTest {
@@ -61,5 +64,24 @@ public class ServiceServiceTest {
         assertEquals(serviceEntity.getPrice(), result.getPrice());
         assertEquals("Peluqeria", result.getName());
         assertEquals("Cortar cabello", result.getDescription());
+    };
+
+    // Delete
+    @Test
+    public void testDelete() {
+
+        // Given
+        Long serviceDelete = 1L;
+
+        ServiceEntity serviceEntity = new ServiceEntity();
+        serviceEntity.setId(serviceDelete);
+
+        when(this.serviceRepository.findById(serviceDelete)).thenReturn(Optional.of(serviceEntity));
+
+        // When
+        serviceService.delete(serviceDelete);
+
+        // Then
+        verify(serviceRepository).delete(serviceEntity);
     };
 };
