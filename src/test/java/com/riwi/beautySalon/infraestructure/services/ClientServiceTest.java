@@ -1,0 +1,72 @@
+package com.riwi.beautySalon.infraestructure.services;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.riwi.beautySalon.api.dto.request.ClientReq;
+import com.riwi.beautySalon.api.dto.response.ClientResp;
+import com.riwi.beautySalon.domain.entities.Appointment;
+import com.riwi.beautySalon.domain.entities.ClientEntity;
+import com.riwi.beautySalon.domain.repositories.AppointmentRepository;
+import com.riwi.beautySalon.domain.repositories.ClientRepository;
+import com.riwi.beautySalon.utils.DataProviderClient;
+
+@ExtendWith(MockitoExtension.class)
+public class ClientServiceTest {
+    
+    @Mock
+    private ClientRepository clientRepository;
+
+    @Mock
+    private AppointmentRepository appointmentRepository;
+
+    @InjectMocks
+    private ClientService clientService;
+
+    // Create
+    @Test
+    public void testCreate() {
+
+        // Given
+        List<Appointment> appointments = DataProviderClient.appointmentsEntity();
+
+        ClientReq clientReq = new ClientReq();
+        clientReq.setFirstName("Pepe");
+        clientReq.setLastName("Perez");
+        clientReq.setEmail("pepe@gmail.com");
+        clientReq.setPhone("123484844");
+
+        ClientEntity clientEntity = new ClientEntity();
+        clientEntity.setId(1L);
+        clientEntity.setFirstName("Pepe");
+        clientEntity.setLastName("Perez");
+        clientEntity.setEmail("pepe@gmail.com");
+        clientEntity.setPhone("123484844");
+        clientEntity.setAppointments(appointments);
+
+        when(this.clientRepository.save(any(ClientEntity.class))).thenReturn(clientEntity);
+
+        // When
+        ClientResp response = clientService.create(clientReq);
+
+        // Then
+        assertNotNull(response);
+        assertEquals(1L, response.getId());
+        assertEquals("Pepe", response.getFirstName());
+        assertEquals("Perez", response.getLastName());
+        assertEquals("123484844", response.getPhone());
+        assertEquals("pepe@gmail.com", response.getEmail());
+        assertEquals(clientEntity.getAppointments().size(), response.getAppointments().size());
+
+        System.out.println("Metodo Crear Client");
+    };
+};
