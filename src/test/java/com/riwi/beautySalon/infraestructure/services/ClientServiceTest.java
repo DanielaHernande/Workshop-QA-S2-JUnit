@@ -33,6 +33,36 @@ public class ClientServiceTest {
     @InjectMocks
     private ClientService clientService;
 
+    // get
+    @Test
+    public void testGet() {
+
+        // Given
+        Long clientId = 1L;
+
+        ClientEntity clientEntity = new ClientEntity();
+        clientEntity.setId(1L);
+        clientEntity.setFirstName("Pepe");
+        clientEntity.setLastName("Perez");
+        clientEntity.setEmail("pepe@gmail.com");
+        clientEntity.setPhone("123484844");
+        clientEntity.setAppointments(DataProviderClient.appointmentsEntity());
+
+        when(this.clientRepository.findById(clientId)).thenReturn(Optional.of(clientEntity));
+
+        // When
+        ClientResp result = clientService.get(clientId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("Pepe", result.getFirstName());
+        assertEquals(clientEntity.getPhone(), result.getPhone());
+        assertEquals(clientEntity.getEmail(), result.getEmail());
+
+        System.out.println("Metodo get Client");
+    };
+
     // Create
     @Test
     public void testCreate() {
