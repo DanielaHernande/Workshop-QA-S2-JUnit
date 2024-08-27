@@ -2,9 +2,11 @@ package com.riwi.beautySalon.utils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.riwi.beautySalon.api.dto.response.AppointmentBasicResp;
+import com.riwi.beautySalon.api.dto.response.ClientBasicResp;
 import com.riwi.beautySalon.domain.entities.Appointment;
 import com.riwi.beautySalon.domain.entities.ClientEntity;
 import com.riwi.beautySalon.domain.entities.Employee;
@@ -63,6 +65,39 @@ public class DataProviderClient {
 
 
         return (List<AppointmentBasicResp>) appointment1;
+    };
+
+    // List
+    public static List<ClientEntity> clientList() {
+        System.out.println(" --> Obteniendo listado Mock");
+
+        // Crear una lista de ClientEntity
+        List<ClientEntity> clients = new ArrayList<>();
+
+        // Crear y configurar el primer ClientEntity
+        ClientEntity clientEntity = new ClientEntity();
+        clientEntity.setId(1L);
+        clientEntity.setUser(null); // Ajusta si es necesario
+        clientEntity.setPhone("32145697");
+        clientEntity.setLastName("Nero");
+        clientEntity.setFirstName("Cindy");
+        clientEntity.setEmail("cindy@gmail.com");
+
+        // Crear y configurar el segundo ClientEntity
+        ClientEntity clientEntity1 = new ClientEntity();
+        clientEntity1.setId(2L); // Asegúrate de que los IDs sean únicos
+        clientEntity1.setUser(null); // Ajusta si es necesario
+        clientEntity1.setPhone("98765432");
+        clientEntity1.setLastName("Smith");
+        clientEntity1.setFirstName("John");
+        clientEntity1.setEmail("john.smith@example.com");
+
+        // Añadir los ClientEntity a la lista
+        clients.add(clientEntity);
+        clients.add(clientEntity1);
+
+        // Devolver la lista de ClientEntity
+        return clients;
     };
 
 
