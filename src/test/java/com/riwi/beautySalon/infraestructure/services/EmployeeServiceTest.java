@@ -68,6 +68,57 @@ public class EmployeeServiceTest {
         System.out.println("Metodo create de Employee");
     };
 
+    // Actualizar
+    @Test
+    public void testUpdate() {
+
+        // Given
+        Long employeeId = 1L;
+
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setUser(null);
+        employee.setRole(null);
+        employee.setPhone("12345866");
+        employee.setLastName("Perez");
+        employee.setFirstName("Pepe");
+        employee.setEmail("pepe@gmail.com");
+        employee.setAppointments(DataProviderClient.appointmentsEntity());
+
+        EmployeeReq employeeReq = new EmployeeReq();
+        employeeReq.setFirstName("Cindy");
+        employeeReq.setLastName("Nero");
+        employeeReq.setEmail("cindy@gmail.com");
+        employeeReq.setPhone("145789862");
+        employeeReq.setRole(null);
+
+        Employee employeeUpdate = new Employee();
+        employeeUpdate.setId(employeeId);
+        employeeUpdate.setUser(null);
+        employeeUpdate.setRole(null);
+        employeeUpdate.setPhone("145789862");
+        employeeUpdate.setLastName("Nero");
+        employeeUpdate.setFirstName("Cindy");
+        employeeUpdate.setEmail("cindy@gmail.com");
+        employeeUpdate.setAppointments(DataProviderClient.appointmentsEntity());
+
+        when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        when(this.employeeRepository.save(any(Employee.class))).thenReturn(employeeUpdate);
+
+        // wHEN
+        EmployeeResp response = employeeService.update(employeeReq, employeeId);
+
+        // Then
+        assertNotNull(response);
+        assertEquals(employeeId, response.getId());
+        assertEquals(employeeUpdate.getFirstName(), response.getFirstName());
+        assertEquals(employeeUpdate.getLastName(), response.getLastName());
+        assertEquals(employeeUpdate.getEmail(), response.getEmail());
+        assertEquals(employeeUpdate.getPhone(), response.getPhone());
+
+        System.out.println("metodo updated de employe");
+    };
+
     // Eliminar
     @Test
     public void testDelete() {
@@ -88,4 +139,4 @@ public class EmployeeServiceTest {
 
         System.out.println("Metodo delete de employee");
     };
-}
+};
