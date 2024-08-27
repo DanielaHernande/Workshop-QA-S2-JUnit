@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.riwi.beautySalon.api.dto.request.AppointmentReq;
 import com.riwi.beautySalon.api.dto.response.AppointmentResp;
+import com.riwi.beautySalon.api.dto.response.ClientBasicResp;
 import com.riwi.beautySalon.domain.entities.Appointment;
 import com.riwi.beautySalon.domain.entities.ClientEntity;
 import com.riwi.beautySalon.domain.entities.Employee;
@@ -31,6 +32,7 @@ import com.riwi.beautySalon.domain.repositories.EmployeeRepository;
 import com.riwi.beautySalon.domain.repositories.ServiceRepository;
 import com.riwi.beautySalon.infraestructure.helpers.EmailHelper;
 import com.riwi.beautySalon.utils.enums.SortType;
+
 @ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
 
@@ -126,4 +128,54 @@ public class AppointmentServiceTest {
         verify(employeeRepository).findById(employeeId);
         verify(serviceRepository).findById(serviceId);
     };
-}
+
+    // Get
+    @Test
+    public void testGet() {
+
+        // Given
+        Long appointmentId = 2L;
+
+        Appointment appointment = DataProviderAppointment.appointmentById(appointmentId);
+
+        // When
+        when(this.appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+
+        AppointmentResp result = appointmentService.get(appointmentId);
+
+        // Cliente basico
+        ClientBasicResp clientResp = new ClientBasicResp();
+        clientResp.setId(appointment.getClient().getId());
+        clientResp.setFirstName(appointment.getClient().getFirstName());
+        clientResp.setEmail(appointment.getClient().getEmail());
+        clientResp.setLastName(appointment.getClient().getLastName());
+        clientResp.setPhone(appointment.getClient().getPhone());
+
+        // Then
+        assertNotNull(result);
+        assertEquals(appointmentId, result.getId());
+
+        assertEquals(clientResp.getId(), result.getClient().getId());
+        assertEquals(clientResp.getPhone(), result.getClient().getPhone());
+        assertEquals(clientResp.getEmail(), result.getClient().getEmail());
+        assertEquals(clientResp.getLastName(), result.getClient().getLastName());
+        assertEquals(clientResp.getFirstName(), result.getClient().getFirstName());
+
+        assertEquals(appointment.getEmployee().getId(), result.getEmployee().getId());
+        assertEquals(appointment.getEmployee().getEmail(), result.getEmployee().getEmail());
+        assertEquals(appointment.getEmployee().getPhone(), result.getEmployee().getPhone());
+        assertEquals(appointment.getEmployee().getLastName(), result.getEmployee().getLastName());
+        assertEquals(appointment.getEmployee().getFirstName(), result.getEmployee().getFirstName());
+
+        assertEquals(appointment.getService().getId(), result.getService().getId());
+        assertEquals(appointment.getService().getName(), result.getService().getName());
+        assertEquals(appointment.getService().getPrice(), result.getService().getPrice());
+        assertEquals(appointment.getService().getDescription(), result.getService().getDescription());
+
+        verify(appointmentRepository).findById(appointmentId);
+
+        System.out.println("Hola");
+    };
+
+
+};
