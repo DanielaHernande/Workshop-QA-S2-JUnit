@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import com.riwi.beautySalon.api.dto.request.EmployeeReq;
 import com.riwi.beautySalon.api.dto.response.EmployeeResp;
@@ -21,6 +25,7 @@ import com.riwi.beautySalon.domain.entities.Appointment;
 import com.riwi.beautySalon.domain.entities.Employee;
 import com.riwi.beautySalon.domain.repositories.EmployeeRepository;
 import com.riwi.beautySalon.utils.DataProviderClient;
+import com.riwi.beautySalon.utils.enums.SortType;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeeServiceTest {
@@ -31,6 +36,35 @@ public class EmployeeServiceTest {
     @InjectMocks
     private EmployeeService employeeService;
 
+    // None
+    @Test
+    public void testGetAllNONE() {
+
+        // Given
+        int page = 0;
+        int size = 10;
+        SortType sortType = SortType.NONE;
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(new Employee(1L, "Pepe", "Perez", "pepe@gmail.com", "123456789", null, null, null));
+
+        Page<Employee> emplPage = new PageImpl<>(employees);
+
+        when(this.employeeRepository.findAll(PageRequest.of(page, size))).thenReturn(emplPage);
+
+        // When
+        Page<EmployeeResp> result = employeeService.getAll(page, size, sortType);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(emplPage.getContent().get(0).getFirstName(), result.getContent().get(0).getFirstName());
+        assertEquals(emplPage.getContent().get(0).getLastName(), result.getContent().get(0).getLastName());
+        assertEquals(emplPage.getContent().get(0).getEmail(), result.getContent().get(0).getEmail());
+        assertEquals(emplPage.getContent().get(0).getPhone(), result.getContent().get(0).getPhone());
+    };
+
+    // Crear
     @Test
     public void testCreate() {
 
