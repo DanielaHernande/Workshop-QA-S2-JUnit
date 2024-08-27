@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.riwi.beautySalon.api.dto.response.AppointmentBasicResp;
-import com.riwi.beautySalon.api.dto.response.ClientBasicResp;
 import com.riwi.beautySalon.domain.entities.Appointment;
 import com.riwi.beautySalon.domain.entities.ClientEntity;
 import com.riwi.beautySalon.domain.entities.Employee;
