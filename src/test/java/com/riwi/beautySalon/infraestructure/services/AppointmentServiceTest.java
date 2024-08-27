@@ -239,4 +239,23 @@ public class AppointmentServiceTest {
         verify(serviceRepository).findById(serviceId);
         verify(appointmentRepository, times(1)).save(any(Appointment.class));
     };
+
+    // Eliminar
+    @Test
+    public void testDelete() {
+
+        // Given
+        Long appointmentDeleteId = 1L;
+
+        Appointment appointment = new Appointment();
+        appointment.setId(appointmentDeleteId);
+
+        when(appointmentRepository.findById(appointmentDeleteId)).thenReturn(Optional.of(appointment));
+
+        // When
+        appointmentService.delete(appointmentDeleteId);
+
+        // Then
+        verify(appointmentRepository).delete(appointment);
+    };
 };
