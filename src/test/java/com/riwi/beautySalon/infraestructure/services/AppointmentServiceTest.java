@@ -2,6 +2,7 @@ package com.riwi.beautySalon.infraestructure.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
@@ -178,4 +179,64 @@ public class AppointmentServiceTest {
     };
 
 
+    // Actualizar
+    @Test
+    public void testUpdate() {
+        
+        // Given
+        Long clientId = 1L;
+        Long appointmentId = 1L;
+        Long employeeId = 2L;
+        Long serviceId = 1L;
+
+        AppointmentReq request = new AppointmentReq();
+        request.setClientId(clientId);
+        request.setEmployeeId(employeeId);
+        request.setServiceId(serviceId);
+        request.setDateTime(LocalDateTime.now());
+
+        // Objetos para simular una entodad
+        ClientEntity clien = DataProviderAppointment.clientById(clientId);
+        Employee employee = DataProviderAppointment.employeeById(employeeId);
+        ServiceEntity serviceEntity = DataProviderAppointment.serviceEntityById(serviceId);
+
+        // Obbjeto crado
+        Appointment appointmentSave = new Appointment();
+        appointmentSave.setId(1L);
+        appointmentSave.setComments("Muy bien");
+        appointmentSave.setClient(clien);
+        appointmentSave.setEmployee(employee);
+        appointmentSave.setService(serviceEntity);
+        appointmentSave.setDateTime(request.getDateTime());
+        appointmentSave.setDuration(request.getDuration());
+
+        // Objeto Actualizado
+        Appointment appointmentUpdate = new Appointment();
+        appointmentUpdate.setId(1L);
+        appointmentUpdate.setComments("Actualizado");
+        appointmentUpdate.setClient(clien);
+        appointmentUpdate.setEmployee(employee);
+        appointmentUpdate.setService(serviceEntity);
+        appointmentUpdate.setDateTime(request.getDateTime());
+        appointmentUpdate.setDuration(request.getDuration());
+
+        // When
+        when(this.clientRepository.findById(clientId)).thenReturn(Optional.of(clien));
+        when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        when(this.serviceRepository.findById(serviceId)).thenReturn(Optional.of(serviceEntity));
+        when(this.appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointmentSave));
+        when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(appointmentUpdate);
+
+        AppointmentResp response = appointmentService.update(request, appointmentId);
+
+        // Then
+        // Verifica que no sea nulo
+        assertNotNull(response);
+        // Verifica que tenga los datos correctos
+        //assertEquals(clientId, response.getClient().getId());
+        verify(clientRepository).findById(clientId);
+        verify(employeeRepository).findById(employeeId);
+        verify(serviceRepository).findById(serviceId);
+        verify(appointmentRepository, times(1)).save(any(Appointment.class));
+    };
 };
