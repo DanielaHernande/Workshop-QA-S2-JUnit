@@ -1,10 +1,13 @@
 package com.riwi.beautySalon.infraestructure.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +61,31 @@ public class EmployeeServiceTest {
 
         // Then
         assertNotNull(result);
+        assertEquals(employee.getEmail(), result.getEmail());
+        assertEquals(employee.getFirstName(), result.getFirstName());
+        assertEquals(employee.getLastName(), result.getLastName());
+
+        System.out.println("Metodo create de Employee");
     };
 
-    
+    // Eliminar
+    @Test
+    public void testDelete() {
+
+        // Given
+        Long employeeDelete = 1L;
+
+        Employee employee = new Employee();
+        employee.setId(employeeDelete);
+
+        when(this.employeeRepository.findById(employeeDelete)).thenReturn(Optional.of(employee));
+
+        // When
+        employeeService.delete(employeeDelete);
+
+        // Then
+        verify(employeeRepository).delete(employee);
+
+        System.out.println("Metodo delete de employee");
+    };
 }
