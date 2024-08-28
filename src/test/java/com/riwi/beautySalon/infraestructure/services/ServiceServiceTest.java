@@ -32,7 +32,6 @@ public class ServiceServiceTest {
 
     @InjectMocks
     private ServiceService serviceService;
-    
 
     // Crear
     @Test
@@ -64,6 +63,53 @@ public class ServiceServiceTest {
         assertEquals(serviceEntity.getPrice(), result.getPrice());
         assertEquals("Peluqeria", result.getName());
         assertEquals("Cortar cabello", result.getDescription());
+    };
+
+    // Actualizar
+    @Test
+    public void testIpdate() {
+
+        // Given
+        Long serviceId = 1L;
+
+        ServiceEntity serviceEntity = new ServiceEntity();
+        serviceEntity.setId(serviceId);
+        serviceEntity.setName("Peluqeria");
+        serviceEntity.setDescription("Cortar cabello");
+        serviceEntity.setPrice(new BigDecimal("20.000"));
+        serviceEntity.setAppointments(DataProviderClient.appointmentsEntity());
+
+        // Datos actualizacion
+        ServiceReq serviceReq = new ServiceReq();
+        serviceReq.setName("Corte");
+        serviceReq.setPrice(new BigDecimal("20.000"));
+        serviceReq.setDescription("Corte y peinado");
+
+        // Entidad actualizada
+        ServiceEntity serviceEntityUpdate = new ServiceEntity();
+        serviceEntityUpdate.setId(serviceId);
+        serviceEntityUpdate.setName("Corte");
+        serviceEntityUpdate.setDescription("Corte y peinado");
+        serviceEntityUpdate.setPrice(new BigDecimal("30.000"));
+        serviceEntityUpdate.setAppointments(serviceEntity.getAppointments());
+
+        // Configurar comportamiento del repositorio
+        when(this.serviceRepository.findById(serviceId)).thenReturn(Optional.of(serviceEntity));
+        when(this.serviceRepository.save(any(ServiceEntity.class))).thenReturn(serviceEntityUpdate);
+
+        // When
+        ServiceResp result = serviceService.update(serviceReq, serviceId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(serviceEntityUpdate.getId(), result.getId());
+        assertEquals(serviceEntityUpdate.getName(), result.getName());
+        assertEquals(serviceEntityUpdate.getDescription(), result.getDescription());
+        assertEquals(serviceEntityUpdate.getDescription(), result.getDescription());
+
+        verify(serviceRepository).save(any(ServiceEntity.class));
+
+        System.out.println("Metodo updatye de services");
     };
 
     // Delete
