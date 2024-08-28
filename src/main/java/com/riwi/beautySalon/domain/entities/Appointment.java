@@ -25,10 +25,13 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private LocalDateTime dateTime;
+
     @Column(nullable = false)
     private Integer duration;
+    
     @Lob // -> Text
     private String comments;
 

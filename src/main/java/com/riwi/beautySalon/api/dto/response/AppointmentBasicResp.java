@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentBasicResp {
+    
     private Long id;
     private LocalDateTime dateTime;
     private Integer duration;
