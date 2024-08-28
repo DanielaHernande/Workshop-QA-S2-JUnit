@@ -27,9 +27,11 @@ import com.riwi.beautySalon.utils.DataProviderClient;
 @ExtendWith(MockitoExtension.class)
 public class ServiceServiceTest {
 
+    // Mock of the repository to simulate access to the database
     @Mock
     private ServiceRepository serviceRepository;
 
+    // Injects the mock from the repository into the service
     @InjectMocks
     private ServiceService serviceService;
 
@@ -38,8 +40,10 @@ public class ServiceServiceTest {
     public void testGet() {
 
         // Given
+        // configure the ID of the service to be obtained.
         Long serviceId = 1L;
 
+        // Create a service entity with fictitious data
         ServiceEntity serviceEntity = new ServiceEntity();
         serviceEntity.setId(serviceId);
         serviceEntity.setName("Peluqeria");
@@ -47,12 +51,15 @@ public class ServiceServiceTest {
         serviceEntity.setPrice(new BigDecimal("20.000"));
         serviceEntity.setAppointments(DataProviderClient.appointmentsEntity());
 
+        // We configure the behavior of the repository to return this entity when asked for the ID
         when(this.serviceRepository.findById(serviceId)).thenReturn(Optional.of(serviceEntity));
 
         // When
+        // The service is called to get the service by ID
         ServiceResp result = serviceService.get(serviceId);
 
         // Then
+        // we verify that the result is not null and that the data returned match the original entity
         assertNotNull(result);
         assertEquals(serviceEntity.getId(), result.getId());
         assertEquals(serviceEntity.getName(), result.getName());
@@ -67,6 +74,7 @@ public class ServiceServiceTest {
     public void testCreate() {
 
         // Given
+        // we set up the service request with fictitious data
         List<Appointment> appointments = DataProviderClient.appointmentsEntity();
 
         ServiceReq serviceReq = new ServiceReq();
@@ -75,6 +83,7 @@ public class ServiceServiceTest {
         BigDecimal price = new BigDecimal(10.22);
         serviceReq.setPrice(price);
 
+        // Create a service entity that simulates the saved entity
         ServiceEntity serviceEntity = new ServiceEntity();
         serviceEntity.setId(1L);
         serviceEntity.setName("Peluqeria");
@@ -82,25 +91,32 @@ public class ServiceServiceTest {
         serviceEntity.setPrice(price);
         serviceEntity.setAppointments(appointments);
 
+        // We configure the behavior of the repository to return the saved entity when `save` is called.
         when(this.serviceRepository.save(any(ServiceEntity.class))).thenReturn(serviceEntity);
 
         // When
+        // the service is called to create the new service
         ServiceResp result = serviceService.create(serviceReq);
 
         // Then
+        // we verify that the result is not null and that the data returned match those of the original request
         assertNotNull(result);
         assertEquals(serviceEntity.getPrice(), result.getPrice());
         assertEquals("Peluqeria", result.getName());
         assertEquals("Cortar cabello", result.getDescription());
+
+        System.out.println("Metodo crear de services");
     };
 
     // Actualizar
     @Test
-    public void testIpdate() {
+    public void testUpdate() {
 
         // Given
+        // configure the ID of the service to be updated
         Long serviceId = 1L;
 
+        // Create a service entity with the original data
         ServiceEntity serviceEntity = new ServiceEntity();
         serviceEntity.setId(serviceId);
         serviceEntity.setName("Peluqeria");
@@ -127,9 +143,11 @@ public class ServiceServiceTest {
         when(this.serviceRepository.save(any(ServiceEntity.class))).thenReturn(serviceEntityUpdate);
 
         // When
+        // the service is called to update the service
         ServiceResp result = serviceService.update(serviceReq, serviceId);
 
         // Then
+        // we verify that the result is not null and that the data returned match those of the updated entity
         assertNotNull(result);
         assertEquals(serviceEntityUpdate.getId(), result.getId());
         assertEquals(serviceEntityUpdate.getName(), result.getName());
@@ -146,17 +164,24 @@ public class ServiceServiceTest {
     public void testDelete() {
 
         // Given
+        //  set the ID of the service to be deleted
         Long serviceDelete = 1L;
 
+        // Create a service entity with the ID of the service to be deleted
         ServiceEntity serviceEntity = new ServiceEntity();
         serviceEntity.setId(serviceDelete);
 
+        // We configure the behavior of the repository to return the entity when the ID is requested.
         when(this.serviceRepository.findById(serviceDelete)).thenReturn(Optional.of(serviceEntity));
 
         // When
+        // the service is called to delete the service
         serviceService.delete(serviceDelete);
 
         // Then
+        // we verify that the repository deleted the corresponding entity
         verify(serviceRepository).delete(serviceEntity);
+
+        System.out.println("Metodo delete de services");
     };
 };

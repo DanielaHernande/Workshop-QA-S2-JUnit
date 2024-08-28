@@ -60,25 +60,30 @@ public class AppointmentServiceTest {
     public void testGetAll() {
 
         // Given
-        int page = 0;
-        int size = 10;
-        SortType sortType = SortType.NONE;
+        int page = 0; // Home page
+        int size = 10; // Page size
+        SortType sortType = SortType.NONE; // Type of order
 
+        // Paging configuration
         Pageable pageable = PageRequest.of(page, size);
+        // Simulated data
         List<Appointment> appointments = DataProviderAppointment.sampleQuotesMock();
 
+        // Simulated dating page
         Page<Appointment> appointmentPage = new PageImpl<>(appointments, pageable, appointments.size());
 
+        // We simulate that the repository returns the page of quotations
         when(appointmentRepository.findAll(any(Pageable.class))).thenReturn(appointmentPage);
 
         // When
+        // We execute the method to test
         Page<AppointmentResp> result = appointmentService.getAll(page, size, sortType);
 
         // Then
+        // Verify that the number of appointments matches the number of appointments.
         assertEquals(appointments.size(), result.getTotalElements());
         // Validamos que no sea nulo
         assertNotNull(result);
-        //verify(this.appointmentRepository).findAll();
     };
 
     // Create
@@ -86,10 +91,11 @@ public class AppointmentServiceTest {
     public void testCreate() {
 
         // Given
-        Long clientId = 1L;
-        Long employeeId = 2L;
-        Long serviceId = 1L;
+        Long clientId = 1L; // Customer ID
+        Long employeeId = 2L; // ID del empleado
+        Long serviceId = 1L; // Service ID
 
+        // A request object is created with the necessary data.
         AppointmentReq request = new AppointmentReq();
         request.setClientId(clientId);
         request.setEmployeeId(employeeId);
@@ -101,6 +107,7 @@ public class AppointmentServiceTest {
         Employee employee = DataProviderAppointment.employeeById(employeeId);
         ServiceEntity serviceEntity = DataProviderAppointment.serviceEntityById(serviceId);
 
+        // Simulate the appointment to be saved
         Appointment appointmentSave = new Appointment();
         appointmentSave.setId(1L);
         appointmentSave.setComments("Muy bien");
@@ -111,20 +118,22 @@ public class AppointmentServiceTest {
         appointmentSave.setDuration(request.getDuration());
 
         // When
+        // We simulate that the repositories return the correct data
         when(this.clientRepository.findById(clientId)).thenReturn(Optional.of(clien));
         when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
         when(this.serviceRepository.findById(serviceId)).thenReturn(Optional.of(serviceEntity));
         when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(appointmentSave);
 
+        // We simulate the sending of an email
         doNothing().when(emailHelper).sendEmail(anyString(), anyString(), anyString(), any(LocalDateTime.class));
 
+        // The method to be tested is executed
         AppointmentResp response = appointmentService.create(request);
 
         // Then
         // Verifica que no sea nulo
         assertNotNull(response);
         // Verifica que tenga los datos correctos
-        //assertEquals(clientId, response.getClient().getId());
         verify(clientRepository).findById(clientId);
         verify(employeeRepository).findById(employeeId);
         verify(serviceRepository).findById(serviceId);
@@ -135,13 +144,16 @@ public class AppointmentServiceTest {
     public void testGet() {
 
         // Given
-        Long appointmentId = 2L;
+        Long appointmentId = 2L; // Appointment ID
 
+        // Simulate an appointment with the given ID
         Appointment appointment = DataProviderAppointment.appointmentById(appointmentId);
 
         // When
+        // We simulate that the repository returns the correct citation
         when(this.appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
 
+        // We execute the method to test
         AppointmentResp result = appointmentService.get(appointmentId);
 
         // Cliente basico
@@ -178,17 +190,17 @@ public class AppointmentServiceTest {
         System.out.println("Hola");
     };
 
-
     // Actualizar
     @Test
     public void testUpdate() {
         
         // Given
-        Long clientId = 1L;
-        Long appointmentId = 1L;
-        Long employeeId = 2L;
-        Long serviceId = 1L;
+        Long clientId = 1L;  // Customer ID
+        Long appointmentId = 1L; // appointment ID
+        Long employeeId = 2L; // employee ID
+        Long serviceId = 1L; // Service ID
 
+        // A request object is created with the necessary data for updating
         AppointmentReq request = new AppointmentReq();
         request.setClientId(clientId);
         request.setEmployeeId(employeeId);
@@ -200,7 +212,7 @@ public class AppointmentServiceTest {
         Employee employee = DataProviderAppointment.employeeById(employeeId);
         ServiceEntity serviceEntity = DataProviderAppointment.serviceEntityById(serviceId);
 
-        // Obbjeto crado
+        // We simulate the existing quote and the updated quote
         Appointment appointmentSave = new Appointment();
         appointmentSave.setId(1L);
         appointmentSave.setComments("Muy bien");
@@ -221,19 +233,20 @@ public class AppointmentServiceTest {
         appointmentUpdate.setDuration(request.getDuration());
 
         // When
+        // Simulate that the repositories return the correct data
         when(this.clientRepository.findById(clientId)).thenReturn(Optional.of(clien));
         when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
         when(this.serviceRepository.findById(serviceId)).thenReturn(Optional.of(serviceEntity));
         when(this.appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointmentSave));
         when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(appointmentUpdate);
 
+        // We execute the method to test
         AppointmentResp response = appointmentService.update(request, appointmentId);
 
         // Then
         // Verifica que no sea nulo
         assertNotNull(response);
         // Verifica que tenga los datos correctos
-        //assertEquals(clientId, response.getClient().getId());
         verify(clientRepository).findById(clientId);
         verify(employeeRepository).findById(employeeId);
         verify(serviceRepository).findById(serviceId);
@@ -245,17 +258,21 @@ public class AppointmentServiceTest {
     public void testDelete() {
 
         // Given
-        Long appointmentDeleteId = 1L;
+        Long appointmentDeleteId = 1L; // Id of the appointment to be deleted
 
+        // We create a new appointment
         Appointment appointment = new Appointment();
         appointment.setId(appointmentDeleteId);
 
+        // Simulate that the repositories return the correct data
         when(appointmentRepository.findById(appointmentDeleteId)).thenReturn(Optional.of(appointment));
 
         // When
+        // We execute the method to test
         appointmentService.delete(appointmentDeleteId);
 
         // Then
+        // we verify that it was deleted correctly
         verify(appointmentRepository).delete(appointment);
     };
 };

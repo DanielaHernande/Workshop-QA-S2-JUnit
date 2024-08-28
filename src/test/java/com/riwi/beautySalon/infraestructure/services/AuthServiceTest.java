@@ -23,9 +23,11 @@ import com.riwi.beautySalon.domain.entities.User;
 import com.riwi.beautySalon.domain.repositories.UserRepository;
 import com.riwi.beautySalon.infraestructure.helpers.JwtService;
 
+// Extend the test with MockitoExtension to enable Mockito features.
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
 
+    // Mocks to simulate the dependencies of the AuthService class.
     @Mock
     private AuthenticationManager authenticationManager; 
 
@@ -35,6 +37,7 @@ public class AuthServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    // InjectMocks for Mockito to inject the mocks in AuthService.
     @InjectMocks
     private AuthService authService;
     
@@ -47,22 +50,29 @@ public class AuthServiceTest {
         loginReq.setUserName("Casimiro");
         loginReq.setPassword("Arriba");
 
+        // We create a simulated user.
         User user = new User();
         user.setUserName("Casimiro");
-        //user.setPassword("Arriba");
 
+        // We simulate authentication with any authentication token.
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(null);
 
+        // We simulate searching for the user by user name.
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.of(user));
 
+        // We simulate the generation of a JWT token for the authenticated user.
         when(jwtService.getToken(user)).thenReturn("dummy-jwt-yoken");
 
         // When
+        // The login method is called with the login request.
         AuthResp result = authService.login(loginReq);
 
         // Then
+        // Verify that the answer is not null.
         assertNotNull(result);
+        // Verifica que el mensaje sea el esperado.
         assertEquals("Autenticado correctamente", result.getMessage());
+        // Verifica que el token sea el esperado.
         assertEquals("dummy-jwt-yoken", result.getToken());
     };
 };

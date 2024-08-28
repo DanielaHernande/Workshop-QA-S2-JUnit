@@ -45,25 +45,31 @@ public class EmployeeServiceTest {
         int size = 10;
         SortType sortType = SortType.NONE;
 
+        // Create a dummy list of employees
         List<Employee> employees = new ArrayList<>();
         employees.add(new Employee(1L, "Pepe", "Perez", "pepe@gmail.com", "123456789", null, null, null));
 
+        // Create a dummy page with the list of employees
         Page<Employee> emplPage = new PageImpl<>(employees);
 
+        // Simulate repository behavior
         when(this.employeeRepository.findAll(PageRequest.of(page, size))).thenReturn(emplPage);
 
         // When
+        // Call to the method under test
         Page<EmployeeResp> result = employeeService.getAll(page, size, sortType);
 
         // Then
+        // Verifications
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(emplPage.getContent().get(0).getFirstName(), result.getContent().get(0).getFirstName());
         assertEquals(emplPage.getContent().get(0).getLastName(), result.getContent().get(0).getLastName());
         assertEquals(emplPage.getContent().get(0).getEmail(), result.getContent().get(0).getEmail());
         assertEquals(emplPage.getContent().get(0).getPhone(), result.getContent().get(0).getPhone());
-    };
 
+        System.out.println("Metodo para obtener la lista por deafult");
+    };
 
     // Get
     @Test
@@ -72,6 +78,7 @@ public class EmployeeServiceTest {
         // Given
         Long employeeId = 1L;
 
+        // Create a simulated employee
         Employee employee = new Employee();
         employee.setId(1L);
         employee.setFirstName("Pepe");
@@ -82,12 +89,15 @@ public class EmployeeServiceTest {
         employee.setRole(null);
         employee.setUser(null);
 
+        // Simulate repository behavior
         when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
 
         // When
+        // Call to the method under test
         EmployeeResp employeeResp = employeeService.get(employeeId);
 
         // Them
+        // Verificaciones
         assertNotNull(employeeResp);
         assertEquals(employee.getId(), employeeResp.getId());
         assertEquals(employee.getEmail(), employeeResp.getEmail());
@@ -103,8 +113,10 @@ public class EmployeeServiceTest {
     public void testCreate() {
 
         // Given
+        // Initial configuration
         List<Appointment> appointments = DataProviderClient.appointmentsEntity();
 
+        // Create a simulated employee request
         EmployeeReq employeeReq = new EmployeeReq();
         employeeReq.setFirstName("Pepe");
         employeeReq.setLastName("Perez");
@@ -112,6 +124,7 @@ public class EmployeeServiceTest {
         employeeReq.setPhone("1234858754");
         employeeReq.setRole(null);
 
+        // Create a simulated employee
         Employee employee = new Employee();
         employee.setId(1L);
         employee.setFirstName("Pepe");
@@ -122,12 +135,15 @@ public class EmployeeServiceTest {
         employee.setRole(null);
         employee.setUser(null);
 
+        // Simulate repository behavior
         when(this.employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
         // When
+        // Call to the method under test
         EmployeeResp result = employeeService.create(employeeReq);
 
         // Then
+        // Verificaciones
         assertNotNull(result);
         assertEquals(employee.getEmail(), result.getEmail());
         assertEquals(employee.getFirstName(), result.getFirstName());
@@ -141,8 +157,10 @@ public class EmployeeServiceTest {
     public void testUpdate() {
 
         // Given
+        // Initial configuration
         Long employeeId = 1L;
 
+        // Create a simulated employee with old data
         Employee employee = new Employee();
         employee.setId(employeeId);
         employee.setUser(null);
@@ -153,6 +171,7 @@ public class EmployeeServiceTest {
         employee.setEmail("pepe@gmail.com");
         employee.setAppointments(DataProviderClient.appointmentsEntity());
 
+        // Create a simulated request with the new data
         EmployeeReq employeeReq = new EmployeeReq();
         employeeReq.setFirstName("Cindy");
         employeeReq.setLastName("Nero");
@@ -160,6 +179,7 @@ public class EmployeeServiceTest {
         employeeReq.setPhone("145789862");
         employeeReq.setRole(null);
 
+        // Create an updated simulated employee
         Employee employeeUpdate = new Employee();
         employeeUpdate.setId(employeeId);
         employeeUpdate.setUser(null);
@@ -170,13 +190,16 @@ public class EmployeeServiceTest {
         employeeUpdate.setEmail("cindy@gmail.com");
         employeeUpdate.setAppointments(DataProviderClient.appointmentsEntity());
 
+        // Simulate repository behavior
         when(this.employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
         when(this.employeeRepository.save(any(Employee.class))).thenReturn(employeeUpdate);
 
         // wHEN
+        // Call to the method under test
         EmployeeResp response = employeeService.update(employeeReq, employeeId);
 
         // Then
+        // Verifications
         assertNotNull(response);
         assertEquals(employeeId, response.getId());
         assertEquals(employeeUpdate.getFirstName(), response.getFirstName());
@@ -194,15 +217,19 @@ public class EmployeeServiceTest {
         // Given
         Long employeeDelete = 1L;
 
+        // Create a simulated employee
         Employee employee = new Employee();
         employee.setId(employeeDelete);
 
+        // Simulate repository behavior
         when(this.employeeRepository.findById(employeeDelete)).thenReturn(Optional.of(employee));
 
         // When
+        // Llamada al método bajo prueba
         employeeService.delete(employeeDelete);
 
         // Then
+         // Verifications
         verify(employeeRepository).delete(employee);
 
         System.out.println("Metodo delete de employee");
