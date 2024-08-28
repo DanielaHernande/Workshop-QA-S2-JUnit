@@ -2,6 +2,7 @@ package com.riwi.beautySalon.infraestructure.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -64,8 +65,4 @@ public class AuthServiceTest {
         assertEquals("Autenticado correctamente", result.getMessage());
         assertEquals("dummy-jwt-yoken", result.getToken());
     };
-
-
-    // Hola como estas, me puedes ayudar a realizar test unitarios en Java con JUnit y Mockito: 
-    // este es el servicio:
 };
