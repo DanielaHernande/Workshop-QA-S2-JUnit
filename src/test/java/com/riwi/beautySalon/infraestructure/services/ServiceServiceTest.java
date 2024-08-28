@@ -33,6 +33,35 @@ public class ServiceServiceTest {
     @InjectMocks
     private ServiceService serviceService;
 
+    // Get
+    @Test
+    public void testGet() {
+
+        // Given
+        Long serviceId = 1L;
+
+        ServiceEntity serviceEntity = new ServiceEntity();
+        serviceEntity.setId(serviceId);
+        serviceEntity.setName("Peluqeria");
+        serviceEntity.setDescription("Cortar cabello");
+        serviceEntity.setPrice(new BigDecimal("20.000"));
+        serviceEntity.setAppointments(DataProviderClient.appointmentsEntity());
+
+        when(this.serviceRepository.findById(serviceId)).thenReturn(Optional.of(serviceEntity));
+
+        // When
+        ServiceResp result = serviceService.get(serviceId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(serviceEntity.getId(), result.getId());
+        assertEquals(serviceEntity.getName(), result.getName());
+        assertEquals(serviceEntity.getDescription(), result.getDescription());
+        assertEquals(serviceEntity.getDescription(), result.getDescription());
+
+        System.out.println("Metodo get services");
+    }
+        
     // Crear
     @Test
     public void testCreate() {
